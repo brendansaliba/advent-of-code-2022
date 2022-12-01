@@ -1,5 +1,6 @@
 def process_input():
-    file = open('input.txt', 'r')
+    PATH = '/Users/brendansaliba/Projects/Advent of Code 2022/1/input.txt'
+    file = open(PATH, 'r')
 
     lines = [line.rstrip() for line in file]
 
