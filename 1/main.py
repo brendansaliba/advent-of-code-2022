@@ -1,3 +1,9 @@
+# Filename: main.py
+# Created: 12/1/22
+# Author: Brendan Saliba
+# Copyright 2022, Brendan Saliba
+# Description:
+
 def process_input():
     PATH = '/Users/brendansaliba/Projects/Advent of Code 2022/1/input.txt'
     file = open(PATH, 'r')
