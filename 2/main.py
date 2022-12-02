@@ -11,6 +11,8 @@ win_condition = {
     'Paper': 'Rock'
 }
 
+lose_condition = {v: k for k, v in win_condition.items()}
+
 bonus = {
     'Rock': 1,
     'Paper': 2,
@@ -25,7 +27,7 @@ def process_input():
     lines = [line.rstrip() for line in file]
 
     # world's nuttiest list comprehension
-    lines = [line
+    plays = [line
                 .replace('A', 'Rock')
                 .replace('B', 'Paper')
                 .replace('C', 'Scissors')
@@ -35,7 +37,17 @@ def process_input():
                 .split(' ')
              for line in lines]
 
-    return lines
+    plays_pt2 = [line
+                .replace('A', 'Rock')
+                .replace('B', 'Paper')
+                .replace('C', 'Scissors')
+                .replace('X', 'Lose')
+                .replace('Y', 'Draw')
+                .replace('Z', 'Win')
+                .split(' ')
+             for line in lines]
+
+    return plays, plays_pt2
 
 
 def play_round(play):
@@ -51,9 +63,26 @@ def play_round(play):
         return 0 + bonus_points
 
 
-if __name__ == '__main__':
-    lines = process_input()
+def play_round_pt2(play):
+    opponent_play = play[0]
+    match_fix = play[1]
 
-    round_points = [play_round(line) for line in lines]
+    if match_fix == 'Win': # Win
+        my_play = lose_condition[opponent_play]
+        return 6 + bonus[my_play]
+    elif match_fix == 'Lose':  # Lose
+        my_play = win_condition[opponent_play]
+        return 0 + bonus[my_play]
+    else:  # Draw
+        my_play = opponent_play
+        return 3 + bonus[my_play]
+
+
+if __name__ == '__main__':
+    plays, plays_pt2 = process_input()
+
+    round_points = [play_round(play) for play in plays]
+    round_points_pt2 = [play_round_pt2(play) for play in plays_pt2]
 
     print(sum(round_points))
+    print(sum(round_points_pt2))
