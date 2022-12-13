@@ -15,13 +15,18 @@ class Directory:
         if dir_name not in self.directories:
             new_dir = Directory(dir_name)
             self.directories[dir_name] = new_dir
+            print(f'Directory {dir_name} created in {self.name}')
 
     def touch(self, file_name, file_size):
         if file_name not in self.files:
             new_file = File(file_name, file_size)
             self.files[file_name] = new_file
+            print(f'File {file_name} created in {self.name}')
 
     def ls(self):
+        print('Dir:', self.name)
+        print('Directories:', list(self.directories.keys()))
+        print('Files:', list(self.files.keys()))
         pass
 
 
@@ -38,65 +43,85 @@ def process_input(PATH):
     return lines
 
 
-def change_path(command, wd):
+def change_path(command, working_path):
     if command == '/':
-        wd.clear()
+        working_path.clear()
     elif command == '..':
-        wd.pop()
+        working_path.pop()
     else:
-        wd.append(command)
+        working_path.append(command)
 
 
-def change_directory(path, current_dir):
-    return current_dir.directories[path]
+def change_directory(path, root):
+    wd = root
+    # print(f'Current dir {wd.name}')
+    for dir in path[1:]:
+        wd = wd.directories[dir]
+
+    # print(f'New dir: {wd.name}')
+    return wd
+
+
+def is_command(line):
+    if line[0] == '$':
+        return True
+    return False
+
+def process_command(command):
+    split_command = command.split()
+    if split_command[1] == 'cd':
+        if split_command[2] == '/':
+            return '/'
+        if split_command[2] == '..':
+            return '..'
+        return f'{split_command[2]}'
+    elif split_command[1] == 'ls':
+        return 'ls'
 
 
 if __name__ == '__main__':
     PATH = 'test.txt'
     logs = process_input(PATH)
-    file_system = Directory('/')
-    file_system.mkdir('test')
-    file_system.directories['test'].mkdir('another')
-    print(list(file_system.directories.keys()))
-    print(list(file_system.directories['test'].directories.keys()))
-    current_dir = file_system
 
-    wd = ['asdf']
-
-    for path in wd:
-        current_dir = change_directory(path, current_dir)
-
-    change_path('/', wd)
+    root = Directory(dir_name='/')
+    working_path = []
+    working_directory = root
 
     for line in logs:
-        print(line)
-        split_line = line.split()
+        if is_command(line):
+            print(process_command(line))
 
-        if split_line[0] == '$' and split_line[1] == 'cd':
-            # cd
-            if split_line[2] == '/':
-                change_path('/')
 
-            elif split_line[2] == '..':
-                change_path('..')
-
-            else:
-                name = split_line[2]
-                change_path(name)
-
-            change_directory()
-        elif split_line[0] == '$' and split_line[1] == 'ls':
-            # print('List contents')
-            pass
-        elif split_line[0] == 'dir':
-            dir_name = split_line[1]
-
-            current_dir.mkdir(dir_name)
-
-            # print(f'DIR: {name}')
-            # mkdir
-        else:
-            size = split_line[0]
-            name = split_line[1]
-            # print(f'FILE: {name} with size {size}')
-            # touch
+    # for line in logs:
+    #     print(line)
+    #     split_line = line.split()
+    #     print(f'Working dir {working_directory.name}')
+    #     if split_line[0] == '$' and split_line[1] == 'cd':
+    #         # cd
+    #         if split_line[2] == '/':
+    #             change_path('/', working_path)
+    #
+    #         elif split_line[2] == '..':
+    #             change_path('..', working_path)
+    #
+    #         else:
+    #             name = split_line[2]
+    #             change_path(name, working_path)
+    #
+    #         working_directory = change_directory(working_path, root)
+    #         print(f'WORKING DIR: ',working_directory.name)
+    #
+    #     elif split_line[0] == '$' and split_line[1] == 'ls':
+    #         # print('List contents')
+    #         pass
+    #     elif split_line[0] == 'dir':
+    #         dir_name = split_line[1]
+    #         working_directory.mkdir(dir_name)
+    #
+    #     else:
+    #         size = split_line[0]
+    #         name = split_line[1]
+    #         working_directory.touch(name, size)
+    #
+    #     print('-'*10)
+    # working_directory.ls()
